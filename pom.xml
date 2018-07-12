@@ -4,8 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.geetask</groupId>
 	<artifactId>chunked-uploader</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-
+	<version>0.0.1</version>
 	<dependencies>
 		<dependency>
 			<groupId>javax.servlet</groupId>
@@ -77,7 +76,7 @@
 		</license>
 	</licenses>
 	<scm>
-		<tag>0.0.1</tag>
+		<tag>${project.version}</tag>
 		<url>git@github.com:dungang/chunked-uploader.git</url>
 		<connection>scm:git:git@github.com:dungang/chunked-uploader.git</connection>
 		<developerConnection>scm:git:git@github.com:dungang/chunked-uploader.git</developerConnection>
