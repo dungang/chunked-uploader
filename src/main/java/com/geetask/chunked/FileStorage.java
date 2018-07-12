@@ -32,7 +32,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -70,11 +69,11 @@ public class FileStorage extends AbstractStorage {
 			if (false == Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
 				try {
 					Files.createDirectories(path);
-				} catch(FileAlreadyExistsException e) {
+				} catch (FileAlreadyExistsException e) {
 					e.printStackTrace();
-					logger.warn("direct existed: "+ path.toString());
+					logger.warn("direct existed: " + path.toString());
 				}
-				
+
 			}
 
 			// 没有分片时，执行直接保存文件
@@ -90,7 +89,7 @@ public class FileStorage extends AbstractStorage {
 						Files.createDirectories(path.resolve(fileId));
 					} catch (FileAlreadyExistsException e) {
 						e.printStackTrace();
-						logger.warn("direct existed: "+ path.resolve(fileId).toString());
+						logger.warn("direct existed: " + path.resolve(fileId).toString());
 					}
 				}
 
@@ -122,7 +121,6 @@ public class FileStorage extends AbstractStorage {
 				}
 			}
 
-
 		} catch (IOException e) {
 			e.printStackTrace();
 			logger.warn("File load fail.", e);
@@ -147,19 +145,12 @@ public class FileStorage extends AbstractStorage {
 	 * 
 	 * @see com.geetask.webuploader.IStorage#delete(java.lang.String)
 	 */
-	public boolean delete(String savePath) {
-		// TODO Auto-generated method stub
+	public boolean delete(String fileRelativePath) {
+		File file = Paths.get(getBaseDir()).resolve(fileRelativePath).toFile();
+		if (file.isFile()) {
+			return file.delete();
+		}
 		return false;
-	}
-
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.geetask.webuploader.IStorage#list(java.lang.String, int, int)
-	 */
-	public List<String> list(String savePath, int start, int size) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

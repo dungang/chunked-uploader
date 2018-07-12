@@ -20,7 +20,6 @@ package com.geetask.chunked;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.List;
 
 /**
  * @author dungang <dungang@126.com>
@@ -38,8 +37,11 @@ public interface IStorage {
 	 */
 	public String write(InputStream inputStream, Param param, String pathSuffix) throws IOException;
 
-	public boolean delete(String savePath);
-
-	public List<String> list(String savePath, int start, int size);
+	/**
+	 * 根据相对路径删除文件
+	 * @param fileRelativePath
+	 * @return
+	 */
+	public boolean delete(String fileRelativePath);
 
 }
