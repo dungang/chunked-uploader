@@ -11,7 +11,7 @@
 
 ## maven
 
-`
+```xml
 		<dependency>
 			<groupId>com.geetask</groupId>
 			<artifactId>chunked-uploader</artifactId>
@@ -31,7 +31,7 @@
 				</exclusion>
 			</exclusions-->
 		</dependency>
-`
+```
 
 ## 分片的表单参数
 
