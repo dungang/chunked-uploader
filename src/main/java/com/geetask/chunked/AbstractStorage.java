@@ -36,7 +36,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractStorage implements IStorage {
 
 	private static Logger logger = LoggerFactory.getLogger(AbstractStorage.class);
-	
+
 	/**
 	 * 文件存储的基础路径
 	 */
@@ -71,32 +71,35 @@ public abstract class AbstractStorage implements IStorage {
 		return names;
 	}
 
+	public final InitResponse initUpload(String dirSuffix, HttpServletRequest request, HttpServletResponse response) {
+		InitRequest initRequest = new InitRequest();
+		initRequest.setName(request.getParameter("name"));
+		initRequest.setType(request.getParameter("type"));
+		initRequest.setTimestamp(request.getParameter("timestamp"));
+		initRequest.setDirSuffix(dirSuffix);
+		return this.initChunkUpload(initRequest, request, response);
+	}
+
 	/**
 	 * 
 	 * @param inputStream
-	 * @param dirSuffix   保存文件base目录的后缀,比如 2018/06/08
 	 * @param request
 	 * @param response
 	 * @throws IOException
 	 */
-	public String upload(InputStream inputStream, String dirSuffix, HttpServletRequest request,
-			HttpServletResponse response) throws IOException {
+	public final ChunkResponse upload(InputStream inputStream, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
 
 		if (request.getContentLength() > 0) {
-
-			Param param = new Param();
-			param.setId(request.getParameter("id"));
-			param.setUuid(request.getParameter("uuid"));
-			param.setName(request.getParameter("name"));
-			param.setType(request.getParameter("type"));
-			param.setChunk(null == request.getParameter("chunk") ? 0 : Integer.valueOf(request.getParameter("chunk")));
-			param.setChunks(
-					null == request.getParameter("chunks") ? 0 : Integer.valueOf(request.getParameter("chunks")));
-			param.setSize(Integer.valueOf(request.getParameter("size")));
-			param.setExtension(fileExtension(param.getName()));
-			param.setSaveBaseDir(uploaderDir);
-			logger.debug("web uploader param :" + param.toString());
-			return write(inputStream, param, dirSuffix);
+			ChunkRequest chunkRequest = new ChunkRequest();
+			chunkRequest.setUploadId(request.getParameter("uploadId"));
+			chunkRequest.setChunk(request.getParameter("chunk"));
+			chunkRequest.setChunks(request.getParameter("chunks"));
+			chunkRequest.setSize(request.getParameter("size"));
+			chunkRequest.setKey(request.getParameter("key"));
+			chunkRequest.setInputStream(inputStream);
+			logger.debug("web uploader param :" + chunkRequest.toString());
+			return write(chunkRequest, request, response);
 		}
 		return null;
 	}

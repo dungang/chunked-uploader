@@ -32,6 +32,10 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.slf4j.Logger;
@@ -46,77 +50,86 @@ public class FileStorage extends AbstractStorage {
 
 	private static Logger logger = LoggerFactory.getLogger(FileStorage.class);
 
-	/*
-	 * (non-Javadoc)
-	 * 
-	 * @see com.geetask.webuploader.IStorage#write(java.io.InputStream,
-	 * com.geetast.webuploader.Param, java.lang.String)
-	 */
-	@SuppressWarnings("resource")
-	public String write(InputStream inputStream, Param param, String dirSuffix) throws IOException {
+	public InitResponse initChunkUpload(InitRequest initRequest, HttpServletRequest request,
+			HttpServletResponse response) {
+		InitResponse initResponse = new InitResponse();
+		initResponse.setUploadId(UUID.randomUUID().toString());
+		String extension = this.fileExtension(initRequest.getName());
+		String fileName = DigestUtils.md5Hex(initResponse.getUploadId() + initRequest.getTimestamp());
+		Path keyPath = Paths.get(getUploaderDir()).resolve(initRequest.getDirSuffix()).resolve(fileName + extension);
+		initResponse.setKey(keyPath.toString());
+		return initResponse;
+	}
 
+	@SuppressWarnings("resource")
+	public ChunkResponse write(ChunkRequest chunkRequest, HttpServletRequest request, HttpServletResponse response)
+			throws IOException {
+
+		InputStream inputStream = request.getInputStream();
 		RandomAccessFile rf = null;
 		FileChannel channel = null;
 		FileChannel resultFileChannel = null;
+		ChunkResponse chunkResponse = new ChunkResponse();
+		chunkResponse.setKey(chunkRequest.getKey());
+		chunkResponse.setUploadId(chunkRequest.getUploadId());
+		
 		try {
-			Path basePath = Paths.get(getBaseDir());
-			Path savePath = Paths.get(param.getSaveBaseDir()).resolve(dirSuffix);
-			Path path = basePath.resolve(savePath).toAbsolutePath();
+			Path keyPath = Paths.get(chunkRequest.getKey());
+			Path keyAbPath = keyPath.toAbsolutePath();
+			Path parentPath = keyPath.getParent().toAbsolutePath();
+			String chunks = chunkRequest.getChunks();
 
-			String fileId = DigestUtils.md5Hex(param.getUuid() + param.getId());
-			int chunks = param.getChunks();
-
-			if (false == Files.exists(path, LinkOption.NOFOLLOW_LINKS)) {
+			if (false == Files.exists(parentPath, LinkOption.NOFOLLOW_LINKS)) {
 				try {
-					Files.createDirectories(path);
+					Files.createDirectories(parentPath);
 				} catch (FileAlreadyExistsException e) {
 					e.printStackTrace();
-					logger.warn("direct existed: " + path.toString());
+					logger.warn("direct existed: " + parentPath.toString());
 				}
 
 			}
 
 			// 没有分片时，执行直接保存文件
-			if (chunks == 0) {
-				Files.copy(inputStream, path.resolve(fileId + param.getExtension()),
-						StandardCopyOption.REPLACE_EXISTING);
-				return savePath.resolve(fileId + param.getExtension()).toString();
+			if (null == chunks || chunks.equals("0")) {
+				Files.copy(inputStream, keyAbPath, StandardCopyOption.REPLACE_EXISTING);
+				chunkResponse.setCompleted(true);
+				return chunkResponse;
 			} else {
 				// 否则执行，先保存每个分片，最后合并分片
-
-				if (false == Files.exists(path.resolve(fileId), LinkOption.NOFOLLOW_LINKS)) {
+				Path chunksPath = parentPath.resolve(chunkRequest.getUploadId()).toAbsolutePath();
+				if (false == Files.exists(chunksPath, LinkOption.NOFOLLOW_LINKS)) {
 					try {
-						Files.createDirectories(path.resolve(fileId));
+						Files.createDirectories(chunksPath);
 					} catch (FileAlreadyExistsException e) {
 						e.printStackTrace();
-						logger.warn("direct existed: " + path.resolve(fileId).toString());
+						logger.warn("direct existed: " + chunksPath.toString());
 					}
 				}
 
-				Files.copy(inputStream, path.resolve(fileId + "/" + param.getChunk()),
+				Files.copy(inputStream, chunksPath.resolve(chunkRequest.getChunk()),
 						StandardCopyOption.REPLACE_EXISTING);
 
-				ArrayList<String> files = getFiles(path.resolve(fileId + "/").toAbsolutePath().toString());
+				ArrayList<String> files = getFiles(chunksPath.toString());
+				int chunksNum = Integer.valueOf(chunks);
+				if (files.size() == chunksNum) {
 
-				if (files.size() == chunks) {
-
-					Path rPath = path.resolve(fileId + param.getExtension()).toAbsolutePath();
-					resultFileChannel = new FileOutputStream(rPath.toFile(), true).getChannel();
-					for (int i = 0; i < chunks; i++) {
-						FileChannel blk = new FileInputStream(path.resolve(fileId + "/" + i).toAbsolutePath().toFile())
+					resultFileChannel = new FileOutputStream(keyAbPath.toFile(), true).getChannel();
+					for (int i = 0; i < chunksNum; i++) {
+						FileChannel blk = new FileInputStream(chunksPath.resolve(i + "").toAbsolutePath().toFile())
 								.getChannel();
 						resultFileChannel.transferFrom(blk, resultFileChannel.size(), blk.size());
 						blk.close();
 					}
 
-					for (int i = 0; i < chunks; i++) {
-						File file = path.resolve(fileId + "/" + i).toAbsolutePath().toFile();
+					for (int i = 0; i < chunksNum; i++) {
+						File file = chunksPath.resolve("" + i).toAbsolutePath().toFile();
 						if (file.exists()) {
 							file.delete();
 						}
 					}
-					Files.deleteIfExists(path.resolve(fileId));
-					return savePath.resolve(fileId + param.getExtension()).toString();
+					Files.deleteIfExists(chunksPath);
+					chunkResponse.setCompleted(true);
+					return chunkResponse;
 
 				}
 			}
@@ -136,8 +149,8 @@ public class FileStorage extends AbstractStorage {
 			}
 			inputStream.close();
 		}
-
-		return null;
+		chunkResponse.setCompleted(false);
+		return chunkResponse;
 	}
 
 	/*

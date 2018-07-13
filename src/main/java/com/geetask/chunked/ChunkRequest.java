@@ -18,17 +18,25 @@
  */
 package com.geetask.chunked;
 
+import java.io.InputStream;
+
 /**
  * @author dungang <dungang@126.com>
  * 
  *         2018年7月11日
  */
-public class Param {
+public class ChunkRequest {
 
 	/**
 	 * 当前页面文件的编号
 	 */
 	private String id;
+	
+	/**
+	 * 每个文件上传的Id，全局唯一，由服务端生成。
+	 * 一个文件包含多个分片，但是只有一个id
+	 */
+	private String uploadId;
 
 	/**
 	 * 当前页面回话id
@@ -45,12 +53,12 @@ public class Param {
 	 * 如果只有一个分片，没有此参数
 	 *
 	 */
-	private int chunks;
+	private String chunks;
 	
 	/**
 	 * 分片的序号， 从0开始
 	 */
-	private int chunk;
+	private String chunk;
 	
     /**
      *	 分片文件的类型，如image/jpeg
@@ -61,7 +69,7 @@ public class Param {
 	/**
 	 * 完整文件的大小
 	 */
-	private int size;
+	private String size;
 	
 	/**
 	 * 保存的基础目录
@@ -73,6 +81,14 @@ public class Param {
 	 * 文件后缀
 	 */
 	private String extension;
+	
+	
+	private InputStream inputStream;
+	
+	/**
+	 * 文件存储最终的文件路径
+	 */
+	private String key;
 
 
 	public String getId() {
@@ -105,23 +121,33 @@ public class Param {
 	}
 
 
-	public int getChunks() {
+	public String getChunks() {
 		return chunks;
 	}
 
 
-	public void setChunks(int chunks) {
+	public void setChunks(String chunks) {
 		this.chunks = chunks;
 	}
 
 
-	public int getChunk() {
+	public String getChunk() {
 		return chunk;
 	}
 
 
-	public void setChunk(int chunk) {
+	public void setChunk(String chunk) {
 		this.chunk = chunk;
+	}
+
+
+	public String getSize() {
+		return size;
+	}
+
+
+	public void setSize(String size) {
+		this.size = size;
 	}
 
 
@@ -132,16 +158,6 @@ public class Param {
 
 	public void setType(String type) {
 		this.type = type;
-	}
-
-
-	public int getSize() {
-		return size;
-	}
-
-
-	public void setSize(int size) {
-		this.size = size;
 	}
 
 
@@ -165,11 +181,43 @@ public class Param {
 	}
 
 
+	public InputStream getInputStream() {
+		return inputStream;
+	}
+
+
+	public void setInputStream(InputStream inputStream) {
+		this.inputStream = inputStream;
+	}
+
+
+	public String getKey() {
+		return key;
+	}
+
+
+	public void setKey(String key) {
+		this.key = key;
+	}
+
+
+	public String getUploadId() {
+		return uploadId;
+	}
+
+
+	public void setUploadId(String uploadId) {
+		this.uploadId = uploadId;
+	}
+
+
 	@Override
 	public String toString() {
-		return "Param [id=" + id + ", uuid=" + uuid + ", name=" + name + ", chunks=" + chunks + ", chunk=" + chunk
-				+ ", type=" + type + ", size=" + size + ", saveBaseDir=" + saveBaseDir + ", extension=" + extension
-				+ "]";
+		return "ChunkRequest [id=" + id + ", name=" + name + ", chunks=" + chunks + ", chunk=" + chunk + ", type="
+				+ type + ", size=" + size + ", key=" + key + "]";
 	}
+
+
+	
 
 }

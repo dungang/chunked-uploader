@@ -24,15 +24,18 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
+import com.geetask.chunked.ChunkResponse;
 import com.geetask.chunked.FileStorage;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
 import java.io.IOException;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
@@ -44,6 +47,7 @@ public class FileUploaderTest {
 
 	/**
 	 * 测试上传不分片的文件上传
+	 * 
 	 * @throws IOException
 	 */
 	@Test
@@ -58,26 +62,27 @@ public class FileUploaderTest {
 
 		HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 		HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-		when(mockRequest.getParameter("uuid")).thenReturn(uuid);
-		when(mockRequest.getParameter("id")).thenReturn("WU_FILE_0");
+		when(mockRequest.getParameter("uploadId")).thenReturn(uuid);
+		when(mockRequest.getParameter("key")).thenReturn("uploader/test/ddddds.txt");
 		when(mockRequest.getParameter("type")).thenReturn("text/plain");
 		when(mockRequest.getParameter("name")).thenReturn("test.txt");
 		when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
 		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
 		when(mockRequest.getContentLength()).thenReturn(1000);
 		FileStorage storage = new FileStorage();
-
-		String url = storage.upload(mockRequest.getInputStream(), "", mockRequest, mockResponse);
-
-		String except = "uploader\\" + DigestUtils.md5Hex(uuid + "WU_FILE_0") + ".txt";
-		assertEquals(except, url);
-		Files.deleteIfExists(Paths.get(url).toAbsolutePath());
+		ChunkResponse rst = storage.upload(mockRequest.getInputStream(), mockRequest, mockResponse);
+		Path filePath = Paths.get(mockRequest.getParameter("key")).toAbsolutePath();
+		assertTrue(rst.isCompleted());
+		assertTrue(filePath.toFile().exists());
+		Files.deleteIfExists(filePath);
+		Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 		Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());
 
 	}
 
 	/**
 	 * 测试分片的文件上传
+	 * 
 	 * @throws IOException
 	 */
 	@Test
@@ -93,34 +98,36 @@ public class FileUploaderTest {
 		for (int k = 0; k < 3; k++) {
 			HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 			HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-			when(mockRequest.getParameter("uuid")).thenReturn(uuid);
-			when(mockRequest.getParameter("id")).thenReturn("WU_FILE_0");
+			when(mockRequest.getParameter("uploadId")).thenReturn(uuid);
+			when(mockRequest.getParameter("key")).thenReturn("uploader/test/ddddds.txt");
 			when(mockRequest.getParameter("type")).thenReturn("text/plain");
 			when(mockRequest.getParameter("name")).thenReturn("test.txt");
-			when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
 			when(mockRequest.getParameter("chunks")).thenReturn("3");
 			when(mockRequest.getParameter("chunk")).thenReturn("" + k);
+			when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
 			when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
 			when(mockRequest.getContentLength()).thenReturn(1000);
 			FileStorage storage = new FileStorage();
 
-			String url = storage.upload(mockRequest.getInputStream(), "", mockRequest, mockResponse);
+			ChunkResponse rst = storage.upload(mockRequest.getInputStream(), mockRequest, mockResponse);
 
 			if (k < 2) {
-				assertNull(url);
+				assertFalse(rst.isCompleted());
 			} else {
-
-				String except = "uploader\\" + DigestUtils.md5Hex(uuid + "WU_FILE_0") + ".txt";
-				assertEquals(except, url);
-				Files.deleteIfExists(Paths.get(url).toAbsolutePath());
+				Path filePath = Paths.get(mockRequest.getParameter("key")).toAbsolutePath();
+				assertTrue(rst.isCompleted());
+				assertTrue(filePath.toFile().exists());
+				Files.deleteIfExists(filePath);
+				Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 				Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());
 			}
 		}
 
 	}
-	
+
 	/**
 	 * 测试删除上传成功的文件
+	 * 
 	 * @throws IOException
 	 */
 	@Test
@@ -135,17 +142,17 @@ public class FileUploaderTest {
 
 		HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 		HttpServletResponse mockResponse = mock(HttpServletResponse.class);
-		when(mockRequest.getParameter("uuid")).thenReturn(uuid);
-		when(mockRequest.getParameter("id")).thenReturn("WU_FILE_0");
+		when(mockRequest.getParameter("uploadId")).thenReturn(uuid);
+		when(mockRequest.getParameter("key")).thenReturn("uploader/test/ddddds.txt");
 		when(mockRequest.getParameter("type")).thenReturn("text/plain");
 		when(mockRequest.getParameter("name")).thenReturn("test.txt");
 		when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
 		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
 		when(mockRequest.getContentLength()).thenReturn(1000);
 		FileStorage storage = new FileStorage();
-
-		String url = storage.upload(mockRequest.getInputStream(), "", mockRequest, mockResponse);
-		assertTrue(storage.delete(url));
+		ChunkResponse rst = storage.upload(mockRequest.getInputStream(), mockRequest, mockResponse);
+		assertTrue(storage.delete(rst.getKey()));
+		Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 		Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());
 
 	}

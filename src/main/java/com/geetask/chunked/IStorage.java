@@ -19,7 +19,9 @@
 package com.geetask.chunked;
 
 import java.io.IOException;
-import java.io.InputStream;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * @author dungang <dungang@126.com>
@@ -29,19 +31,34 @@ import java.io.InputStream;
 public interface IStorage {
 
 	/**
+	 * 每次开始分片上传文件的时，要先获取初始化的参数
+	 * 
+	 * @param initRequest InitRequest
+	 * @param request     HttpServletRequest
+	 * @param response    HttpServletResponse
+	 * @return InitResponse
+	 */
+	public InitResponse initChunkUpload(InitRequest initRequest, HttpServletRequest request,
+			HttpServletResponse response);
+
+	/**
 	 * 写入文件
 	 * 
-	 * @param param      Param 参数对象
-	 * @param pathSuffix String 文件保存的目录后缀
-	 * @return String
+	 * @param chunkRequest ChunkRequest 参数对象
+	 * @param request      HttpServletRequest
+	 * @param response     HttpServletResponse
+	 * @return ChunkResponse
+	 * @throws IOException
 	 */
-	public String write(InputStream inputStream, Param param, String pathSuffix) throws IOException;
+	public ChunkResponse write(ChunkRequest chunkRequest, HttpServletRequest request, HttpServletResponse response)
+			throws IOException;
 
 	/**
 	 * 根据相对路径删除文件
-	 * @param fileRelativePath
-	 * @return
+	 * 
+	 * @param key String
+	 * @return boolean
 	 */
-	public boolean delete(String fileRelativePath);
+	public boolean delete(String key);
 
 }
