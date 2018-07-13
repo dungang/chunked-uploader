@@ -115,7 +115,7 @@
 {
 	"key":"uploader\\test\\905cd7faa06cee41e0deb1a0502a868c.jpg",
 	"uploadId":"370af9d2-c565-4b8e-9fa4-186d150affab",
-	"completed":false //表示还完成此文件所有的分片上传
+	"completed":true //表示已完成此文件所有的分片上传
 }
 ```
 # Demo
