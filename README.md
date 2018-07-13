@@ -165,4 +165,4 @@ public class UploaderController {
 ```
 # Demo
 
-[dungang/chunked-uploader-demo](https://github.com/dungang/chunked-uploader-demo)
+[dungang/chunked-uploader-demo](/dungang/chunked-uploader-demo)
