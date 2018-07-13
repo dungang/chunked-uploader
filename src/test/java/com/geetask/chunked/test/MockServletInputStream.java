@@ -26,7 +26,7 @@ import javax.servlet.ReadListener;
 import javax.servlet.ServletInputStream;
 
 /**
- * @author dungang <dungang@126.com>
+ * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
  *         2018年7月11日
  */

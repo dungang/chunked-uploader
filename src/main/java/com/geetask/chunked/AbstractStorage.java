@@ -29,7 +29,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author dungang <dungang@126.com>
+ * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
  *         2018年7月10日
  */
@@ -50,13 +50,18 @@ public abstract class AbstractStorage implements IStorage {
 	/**
 	 * 获取文件的后组
 	 * 
-	 * @param fileName
-	 * @return
+	 * @param fileName String
+	 * @return String
 	 */
 	protected String fileExtension(String fileName) {
 		return fileName.substring(fileName.indexOf("."), fileName.length());
 	}
 
+	/**
+	 * 获取目录的文件列表
+	 * @param path String
+	 * @return ArrayList
+	 */
 	public static ArrayList<String> getFiles(String path) {
 
 		File file = new File(path);
@@ -71,6 +76,14 @@ public abstract class AbstractStorage implements IStorage {
 		return names;
 	}
 
+	/**
+	 * 初始化上传文件的参数
+	 * @param dirSuffix String
+	 * @param request HttpServletRequest
+	 * @param response HttpServletResponse
+	 * @return InitResponse
+	 * @return InitResponse
+	 */
 	public final InitResponse initUpload(String dirSuffix, HttpServletRequest request, HttpServletResponse response) {
 		InitRequest initRequest = new InitRequest();
 		initRequest.setName(request.getParameter("name"));
@@ -81,10 +94,11 @@ public abstract class AbstractStorage implements IStorage {
 	}
 
 	/**
-	 * 
-	 * @param inputStream
-	 * @param request
-	 * @param response
+	 * 处理上传的文件分片
+	 * @param inputStream InputStream
+	 * @param request HttpServletRequest
+	 * @param response HttpServletResponse
+	 * @return ChunkResponse
 	 * @throws IOException
 	 */
 	public final ChunkResponse upload(InputStream inputStream, HttpServletRequest request, HttpServletResponse response)

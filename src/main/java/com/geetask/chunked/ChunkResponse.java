@@ -19,7 +19,7 @@
 package com.geetask.chunked;
 
 /**
- * @author dungang <dungang@126.com>
+ * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
  * 2018年7月13日
  */

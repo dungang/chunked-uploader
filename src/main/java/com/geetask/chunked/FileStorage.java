@@ -42,7 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * @author dungang <dungang@126.com>
+ * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
  *         2018年7月10日
  */

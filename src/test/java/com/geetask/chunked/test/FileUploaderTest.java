@@ -21,15 +21,12 @@ package com.geetask.chunked.test;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import com.geetask.chunked.ChunkResponse;
 import com.geetask.chunked.FileStorage;
 
-import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +36,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 /**
- * @author dungang <dungang@126.com>
+ * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
  *         2018年7月11日
  */

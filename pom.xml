@@ -145,4 +145,7 @@
 			</build>
 		</profile>
 	</profiles>
+	<name>chunked uploader</name>
+	<url>https://github.com/dungang/chunked-uploader</url>
+	<description>big file chunked upload componet for java</description>
 </project>
