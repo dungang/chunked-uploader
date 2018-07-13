@@ -144,7 +144,7 @@ public class UploaderController {
 	@PostMapping("/uploader")
 	@ResponseBody
 	public ChunkResponse handle(@RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
-		return storage.upload(file.getInputStream(),request, response);
+		return storage.upload(file.getInputStream(),file.getSize(),request, response);;
 	}
 }
 ```
