@@ -67,7 +67,7 @@ public class FileUploaderTest {
 		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
 		when(mockRequest.getContentLength()).thenReturn(1000);
 		FileStorage storage = new FileStorage();
-		ChunkResponse rst = storage.upload(mockRequest.getInputStream(), mockRequest, mockResponse);
+		ChunkResponse rst = storage.upload(mockRequest.getInputStream(),bytes.length, mockRequest, mockResponse);
 		Path filePath = Paths.get(mockRequest.getParameter("key")).toAbsolutePath();
 		assertTrue(rst.isCompleted());
 		assertTrue(filePath.toFile().exists());
@@ -106,7 +106,7 @@ public class FileUploaderTest {
 			when(mockRequest.getContentLength()).thenReturn(1000);
 			FileStorage storage = new FileStorage();
 
-			ChunkResponse rst = storage.upload(mockRequest.getInputStream(), mockRequest, mockResponse);
+			ChunkResponse rst = storage.upload(mockRequest.getInputStream(),bytes.length, mockRequest, mockResponse);
 
 			if (k < 2) {
 				assertFalse(rst.isCompleted());
@@ -147,7 +147,7 @@ public class FileUploaderTest {
 		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
 		when(mockRequest.getContentLength()).thenReturn(1000);
 		FileStorage storage = new FileStorage();
-		ChunkResponse rst = storage.upload(mockRequest.getInputStream(), mockRequest, mockResponse);
+		ChunkResponse rst = storage.upload(mockRequest.getInputStream(),bytes.length, mockRequest, mockResponse);
 		assertTrue(storage.delete(rst.getKey()));
 		Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 		Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());

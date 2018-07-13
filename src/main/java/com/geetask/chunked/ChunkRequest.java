@@ -27,10 +27,6 @@ import java.io.InputStream;
  */
 public class ChunkRequest {
 
-	/**
-	 * 当前页面文件的编号
-	 */
-	private String id;
 	
 	/**
 	 * 每个文件上传的Id，全局唯一，由服务端生成。
@@ -38,10 +34,6 @@ public class ChunkRequest {
 	 */
 	private String uploadId;
 
-	/**
-	 * 当前页面回话id
-	 */
-	private String uuid;
 
 	/**
 	 * 文件的原始名称
@@ -71,17 +63,6 @@ public class ChunkRequest {
 	 */
 	private String size;
 	
-	/**
-	 * 保存的基础目录
-	 */
-	private String saveBaseDir;
-	
-	
-	/**
-	 * 文件后缀
-	 */
-	private String extension;
-	
 	
 	private InputStream inputStream;
 	
@@ -89,26 +70,13 @@ public class ChunkRequest {
 	 * 文件存储最终的文件路径
 	 */
 	private String key;
+	
+	/**
+	 * 分片的文件大小
+	 */
+	private long chunkSize;
 
 
-	public String getId() {
-		return id;
-	}
-
-
-	public void setId(String id) {
-		this.id = id;
-	}
-
-
-	public String getUuid() {
-		return uuid;
-	}
-
-
-	public void setUuid(String uuid) {
-		this.uuid = uuid;
-	}
 
 
 	public String getName() {
@@ -160,27 +128,6 @@ public class ChunkRequest {
 		this.type = type;
 	}
 
-
-	public String getExtension() {
-		return extension;
-	}
-
-
-	public void setExtension(String extension) {
-		this.extension = extension;
-	}
-
-
-	public String getSaveBaseDir() {
-		return saveBaseDir;
-	}
-
-
-	public void setSaveBaseDir(String saveBaseDir) {
-		this.saveBaseDir = saveBaseDir;
-	}
-
-
 	public InputStream getInputStream() {
 		return inputStream;
 	}
@@ -211,13 +158,22 @@ public class ChunkRequest {
 	}
 
 
-	@Override
-	public String toString() {
-		return "ChunkRequest [id=" + id + ", name=" + name + ", chunks=" + chunks + ", chunk=" + chunk + ", type="
-				+ type + ", size=" + size + ", key=" + key + "]";
+	public long getChunkSize() {
+		return chunkSize;
 	}
 
 
+	public void setChunkSize(long chunkSize) {
+		this.chunkSize = chunkSize;
+	}
+
+
+	@Override
+	public String toString() {
+		return "ChunkRequest [uploadId=" + uploadId + ", name=" + name + ", chunks=" + chunks + ", chunk=" + chunk
+				+ ", type=" + type + ", size=" + size + ", key=" + key + ", chunkSize="
+				+ chunkSize + "]";
+	}
 	
 
 }

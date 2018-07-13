@@ -96,12 +96,13 @@ public abstract class AbstractStorage implements IStorage {
 	/**
 	 * 处理上传的文件分片
 	 * @param inputStream InputStream
+	 * @param chunkSize long
 	 * @param request HttpServletRequest
 	 * @param response HttpServletResponse
 	 * @return ChunkResponse
-	 * @throws IOException
+	 * @throws IOException 
 	 */
-	public final ChunkResponse upload(InputStream inputStream, HttpServletRequest request, HttpServletResponse response)
+	public final ChunkResponse upload(InputStream inputStream, long chunkSize, HttpServletRequest request, HttpServletResponse response)
 			throws IOException {
 
 		if (request.getContentLength() > 0) {
@@ -109,8 +110,11 @@ public abstract class AbstractStorage implements IStorage {
 			chunkRequest.setUploadId(request.getParameter("uploadId"));
 			chunkRequest.setChunk(request.getParameter("chunk"));
 			chunkRequest.setChunks(request.getParameter("chunks"));
+			chunkRequest.setName(request.getParameter("name"));
+			chunkRequest.setType(request.getParameter("type"));
 			chunkRequest.setSize(request.getParameter("size"));
 			chunkRequest.setKey(request.getParameter("key"));
+			chunkRequest.setChunkSize(chunkSize);
 			chunkRequest.setInputStream(inputStream);
 			logger.debug("web uploader param :" + chunkRequest.toString());
 			return write(chunkRequest, request, response);
