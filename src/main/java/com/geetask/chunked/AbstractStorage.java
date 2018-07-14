@@ -54,7 +54,7 @@ public abstract class AbstractStorage implements IStorage {
 	 * @return String
 	 */
 	protected String fileExtension(String fileName) {
-		return fileName.substring(fileName.indexOf("."), fileName.length());
+		return fileName.substring(fileName.lastIndexOf("."));
 	}
 
 	/**
