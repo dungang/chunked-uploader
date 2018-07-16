@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>com.geetask</groupId>
 	<artifactId>chunked-uploader</artifactId>
-	<version>1.0.1</version>
+	<version>1.0.2</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 	</properties>
@@ -150,5 +150,5 @@
 	</profiles>
 	<name>chunked uploader</name>
 	<url>https://github.com/dungang/chunked-uploader</url>
-	<description>big file chunked upload componet for java</description>
+	<description>big file chunked upload component for java</description>
 </project>

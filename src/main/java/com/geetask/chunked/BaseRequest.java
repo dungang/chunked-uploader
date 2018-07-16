@@ -16,48 +16,38 @@
  * specific language governing permissions and limitations
  * under the License.
  */
-package com.geetask.chunked.test;
-
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-
-
-import javax.servlet.ReadListener;
-import javax.servlet.ServletInputStream;
+package com.geetask.chunked;
 
 /**
- * @author dungang <a href="mailto:dungang@126.com">dungang</a>
+ * @author dungang dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
- *         2018年7月11日
+ *         2018年7月15日
  */
-class MockServletInputStream extends ServletInputStream {
+public class BaseRequest {
+	/**
+	 * 文件类型 image/jpeg
+	 */
+	private String type;
 
-	private ByteArrayInputStream is;
+	/**
+	 * 文件名称， xxx.jpg
+	 */
+	private String name;
 
-	public MockServletInputStream(byte[] myBytes) {
-
-		is = new ByteArrayInputStream(myBytes);
-
+	public String getType() {
+		return type;
 	}
 
-	@Override
-	public boolean isFinished() {
-		return is.available() <= 0 ? true : false;
-		// return (lastIndexRetrieved == myBytes.length - 1);
+	public void setType(String type) {
+		this.type = type;
 	}
 
-	@Override
-	public boolean isReady() {
-		return isFinished();
+	public String getName() {
+		return name;
 	}
 
-	@Override
-	public void setReadListener(ReadListener readListener) {
-
+	public void setName(String name) {
+		this.name = name;
 	}
 
-	@Override
-	public int read() throws IOException {
-		return is.read();
-	}
 }

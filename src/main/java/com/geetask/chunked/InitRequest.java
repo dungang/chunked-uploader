@@ -23,17 +23,7 @@ package com.geetask.chunked;
  * 
  *         2018年7月13日
  */
-public class InitRequest {
-
-	/**
-	 * 文件类型 image/jpeg
-	 */
-	private String type;
-
-	/**
-	 * 文件名称， xxx.jpg
-	 */
-	private String name;
+public class InitRequest extends BaseRequest {
 
 	/**
 	 * 目录后缀 比如 2018-06-08
@@ -45,22 +35,6 @@ public class InitRequest {
 	 */
 	private String timestamp;
 	
-
-	public String getType() {
-		return type;
-	}
-
-	public void setType(String type) {
-		this.type = type;
-	}
-
-	public String getName() {
-		return name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 	public String getDirSuffix() {
 		return dirSuffix;

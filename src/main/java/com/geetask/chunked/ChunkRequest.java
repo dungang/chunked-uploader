@@ -25,7 +25,7 @@ import java.io.InputStream;
  * 
  *         2018年7月11日
  */
-public class ChunkRequest {
+public class ChunkRequest extends BaseRequest {
 
 	
 	/**
@@ -34,12 +34,6 @@ public class ChunkRequest {
 	 */
 	private String uploadId;
 
-
-	/**
-	 * 文件的原始名称
-	 */
-	private String name;
-	
 	/**
 	 * 如果分片，分片的个数
 	 * 如果只有一个分片，没有此参数
@@ -52,10 +46,6 @@ public class ChunkRequest {
 	 */
 	private String chunk;
 	
-    /**
-     *	 分片文件的类型，如image/jpeg
-     */
-	private String type;
 	
 	
 	/**
@@ -75,18 +65,6 @@ public class ChunkRequest {
 	 * 分片的文件大小
 	 */
 	private long chunkSize;
-
-
-
-
-	public String getName() {
-		return name;
-	}
-
-
-	public void setName(String name) {
-		this.name = name;
-	}
 
 
 	public String getChunks() {
@@ -118,15 +96,6 @@ public class ChunkRequest {
 		this.size = size;
 	}
 
-
-	public String getType() {
-		return type;
-	}
-
-
-	public void setType(String type) {
-		this.type = type;
-	}
 
 	public InputStream getInputStream() {
 		return inputStream;
@@ -170,10 +139,11 @@ public class ChunkRequest {
 
 	@Override
 	public String toString() {
-		return "ChunkRequest [uploadId=" + uploadId + ", name=" + name + ", chunks=" + chunks + ", chunk=" + chunk
-				+ ", type=" + type + ", size=" + size + ", key=" + key + ", chunkSize="
-				+ chunkSize + "]";
+		return "ChunkRequest [uploadId=" + uploadId + ", chunks=" + chunks + ", chunk=" + chunk + ", size=" + size
+				+ ", inputStream=" + inputStream + ", key=" + key + ", chunkSize=" + chunkSize + ", getType()="
+				+ getType() + ", getName()=" + getName() + "]";
 	}
+	
 	
 
 }

@@ -21,15 +21,15 @@ package com.geetask.chunked;
 /**
  * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
- * 2018年7月13日
+ *         2018年7月13日
  */
-public class InitResponse {
+public class InitResponse extends BaseResponse {
 
 	/**
 	 * 本次上传文件的服务id
 	 */
 	private String uploadId;
-	
+
 	/**
 	 * 最终要生成的文件路径和名称
 	 */
@@ -50,6 +50,5 @@ public class InitResponse {
 	public void setKey(String key) {
 		this.key = key;
 	}
-	
-	
+
 }

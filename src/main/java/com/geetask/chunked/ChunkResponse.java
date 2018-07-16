@@ -21,14 +21,14 @@ package com.geetask.chunked;
 /**
  * @author dungang <a href="mailto:dungang@126.com">dungang</a>
  * 
- * 2018年7月13日
+ *         2018年7月13日
  */
-public class ChunkResponse {
+public class ChunkResponse extends BaseResponse {
 
 	private String key;
-	
+
 	private String uploadId;
-	
+
 	private boolean isCompleted = false;
 
 	public String getKey() {
@@ -54,7 +54,5 @@ public class ChunkResponse {
 	public void setCompleted(boolean isCompleted) {
 		this.isCompleted = isCompleted;
 	}
-	
-	
-	
+
 }

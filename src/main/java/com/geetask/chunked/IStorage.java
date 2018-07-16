@@ -38,7 +38,7 @@ public interface IStorage {
 	 * @param response    HttpServletResponse
 	 * @return InitResponse
 	 */
-	public InitResponse initChunkUpload(InitRequest initRequest, HttpServletRequest request,
+	public InitResponse initChunkUpload(InitRequest initRequest, InitResponse initResponse, HttpServletRequest request,
 			HttpServletResponse response);
 
 	/**
@@ -50,8 +50,8 @@ public interface IStorage {
 	 * @return ChunkResponse
 	 * @throws IOException
 	 */
-	public ChunkResponse write(ChunkRequest chunkRequest, HttpServletRequest request, HttpServletResponse response)
-			throws IOException;
+	public ChunkResponse write(ChunkRequest chunkRequest, ChunkResponse chunkResponse, HttpServletRequest request,
+			HttpServletResponse response) throws IOException;
 
 	/**
 	 * 根据相对路径删除文件

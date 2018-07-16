@@ -54,11 +54,12 @@ public abstract class AbstractStorage implements IStorage {
 	 * @return String
 	 */
 	protected String fileExtension(String fileName) {
-		return fileName.substring(fileName.lastIndexOf("."));
+		return fileName.toLowerCase().substring(fileName.lastIndexOf("."));
 	}
 
 	/**
 	 * 获取目录的文件列表
+	 * 
 	 * @param path String
 	 * @return ArrayList
 	 */
@@ -78,33 +79,37 @@ public abstract class AbstractStorage implements IStorage {
 
 	/**
 	 * 初始化上传文件的参数
+	 * 
 	 * @param dirSuffix String
-	 * @param request HttpServletRequest
-	 * @param response HttpServletResponse
+	 * @param request   HttpServletRequest
+	 * @param response  HttpServletResponse
 	 * @return InitResponse
 	 * @return InitResponse
 	 */
 	public final InitResponse initUpload(String dirSuffix, HttpServletRequest request, HttpServletResponse response) {
+		InitResponse initResponse = new InitResponse();
 		InitRequest initRequest = new InitRequest();
 		initRequest.setName(request.getParameter("name"));
 		initRequest.setType(request.getParameter("type"));
 		initRequest.setTimestamp(request.getParameter("timestamp"));
 		initRequest.setDirSuffix(dirSuffix);
-		return this.initChunkUpload(initRequest, request, response);
+
+		return this.initChunkUpload(initRequest, initResponse, request, response);
 	}
 
 	/**
 	 * 处理上传的文件分片
+	 * 
 	 * @param inputStream InputStream
-	 * @param chunkSize long
-	 * @param request HttpServletRequest
-	 * @param response HttpServletResponse
+	 * @param chunkSize   long
+	 * @param request     HttpServletRequest
+	 * @param response    HttpServletResponse
 	 * @return ChunkResponse
-	 * @throws IOException 
+	 * @throws IOException
 	 */
-	public final ChunkResponse upload(InputStream inputStream, long chunkSize, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
-
+	public final ChunkResponse upload(InputStream inputStream, long chunkSize, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
+		ChunkResponse chunkResponse = new ChunkResponse();
 		if (request.getContentLength() > 0) {
 			ChunkRequest chunkRequest = new ChunkRequest();
 			chunkRequest.setUploadId(request.getParameter("uploadId"));
@@ -117,7 +122,7 @@ public abstract class AbstractStorage implements IStorage {
 			chunkRequest.setChunkSize(chunkSize);
 			chunkRequest.setInputStream(inputStream);
 			logger.debug("web uploader param :" + chunkRequest.toString());
-			return write(chunkRequest, request, response);
+			return write(chunkRequest, chunkResponse, request, response);
 		}
 		return null;
 	}

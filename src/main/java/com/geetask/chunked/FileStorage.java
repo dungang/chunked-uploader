@@ -50,9 +50,8 @@ public class FileStorage extends AbstractStorage {
 
 	private static Logger logger = LoggerFactory.getLogger(FileStorage.class);
 
-	public InitResponse initChunkUpload(InitRequest initRequest, HttpServletRequest request,
+	public InitResponse initChunkUpload(InitRequest initRequest, InitResponse initResponse, HttpServletRequest request,
 			HttpServletResponse response) {
-		InitResponse initResponse = new InitResponse();
 		initResponse.setUploadId(UUID.randomUUID().toString());
 		String extension = this.fileExtension(initRequest.getName());
 		String fileName = DigestUtils.md5Hex(initResponse.getUploadId() + initRequest.getTimestamp());
@@ -62,17 +61,16 @@ public class FileStorage extends AbstractStorage {
 	}
 
 	@SuppressWarnings("resource")
-	public ChunkResponse write(ChunkRequest chunkRequest, HttpServletRequest request, HttpServletResponse response)
-			throws IOException {
+	public ChunkResponse write(ChunkRequest chunkRequest, ChunkResponse chunkResponse, HttpServletRequest request,
+			HttpServletResponse response) throws IOException {
 
-		InputStream inputStream = request.getInputStream();
+		InputStream inputStream = chunkRequest.getInputStream();
 		RandomAccessFile rf = null;
 		FileChannel channel = null;
 		FileChannel resultFileChannel = null;
-		ChunkResponse chunkResponse = new ChunkResponse();
 		chunkResponse.setKey(chunkRequest.getKey());
 		chunkResponse.setUploadId(chunkRequest.getUploadId());
-		
+
 		try {
 			Path keyPath = Paths.get(chunkRequest.getKey());
 			Path keyAbPath = keyPath.toAbsolutePath();
@@ -112,8 +110,9 @@ public class FileStorage extends AbstractStorage {
 				ArrayList<String> files = getFiles(chunksPath.toString());
 				int chunksNum = Integer.valueOf(chunks);
 				if (files.size() == chunksNum) {
-
-					resultFileChannel = new FileOutputStream(keyAbPath.toFile(), true).getChannel();
+					File keyFile = keyAbPath.toFile();
+					if(keyFile.exists()) keyFile.delete();
+					resultFileChannel = new FileOutputStream(keyFile, true).getChannel();
 					for (int i = 0; i < chunksNum; i++) {
 						FileChannel blk = new FileInputStream(chunksPath.resolve(i + "").toAbsolutePath().toFile())
 								.getChannel();

@@ -30,6 +30,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.*;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -51,7 +52,7 @@ public class FileUploaderTest {
 	public void testSingleUploadFile() throws IOException {
 		StringBuffer sbf = new StringBuffer();
 		for (int i = 0; i < 10000; i++) {
-			sbf.append("FileUploaderTest");
+			sbf.append("a");
 		}
 		byte[] bytes = sbf.toString().getBytes();
 
@@ -64,13 +65,15 @@ public class FileUploaderTest {
 		when(mockRequest.getParameter("type")).thenReturn("text/plain");
 		when(mockRequest.getParameter("name")).thenReturn("test.txt");
 		when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
-		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
+		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream(bytes));
 		when(mockRequest.getContentLength()).thenReturn(1000);
 		FileStorage storage = new FileStorage();
-		ChunkResponse rst = storage.upload(mockRequest.getInputStream(),bytes.length, mockRequest, mockResponse);
+		ChunkResponse rst = storage.upload(mockRequest.getInputStream(), bytes.length, mockRequest, mockResponse);
 		Path filePath = Paths.get(mockRequest.getParameter("key")).toAbsolutePath();
 		assertTrue(rst.isCompleted());
-		assertTrue(filePath.toFile().exists());
+		File file = filePath.toFile();
+		assertTrue(file.exists());
+		assertTrue(Files.readAllBytes(filePath).length == 10000);
 		Files.deleteIfExists(filePath);
 		Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 		Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());
@@ -85,14 +88,20 @@ public class FileUploaderTest {
 	@Test
 	public void testChunkUploadFile() throws IOException {
 
-		StringBuffer sbf = new StringBuffer();
-		for (int i = 0; i < 10000; i++) {
-			sbf.append("FileUploaderTest");
-		}
-		byte[] bytes = sbf.toString().getBytes();
-
 		String uuid = "dhdhslhdhdhdhdhd";
+
 		for (int k = 0; k < 3; k++) {
+			int size = 4000;
+			if (k == 1) {
+				size = 4000;
+			} else if (k == 2) {
+				size = 2000;
+			}
+			StringBuffer sbf = new StringBuffer();
+			for (int i = 0; i < size; i++) {
+				sbf.append("a");
+			}
+			byte[] bytes = sbf.toString().getBytes();
 			HttpServletRequest mockRequest = mock(HttpServletRequest.class);
 			HttpServletResponse mockResponse = mock(HttpServletResponse.class);
 			when(mockRequest.getParameter("uploadId")).thenReturn(uuid);
@@ -101,19 +110,22 @@ public class FileUploaderTest {
 			when(mockRequest.getParameter("name")).thenReturn("test.txt");
 			when(mockRequest.getParameter("chunks")).thenReturn("3");
 			when(mockRequest.getParameter("chunk")).thenReturn("" + k);
-			when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
-			when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
+			when(mockRequest.getParameter("size")).thenReturn("10000");
+			when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream(bytes));
 			when(mockRequest.getContentLength()).thenReturn(1000);
 			FileStorage storage = new FileStorage();
 
-			ChunkResponse rst = storage.upload(mockRequest.getInputStream(),bytes.length, mockRequest, mockResponse);
+			ChunkResponse rst = storage.upload(mockRequest.getInputStream(), bytes.length, mockRequest, mockResponse);
 
 			if (k < 2) {
 				assertFalse(rst.isCompleted());
 			} else {
 				Path filePath = Paths.get(mockRequest.getParameter("key")).toAbsolutePath();
 				assertTrue(rst.isCompleted());
-				assertTrue(filePath.toFile().exists());
+				File file = filePath.toFile();
+				assertTrue(file.exists());
+				assertTrue(Files.readAllBytes(filePath).length == 10000);
+
 				Files.deleteIfExists(filePath);
 				Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 				Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());
@@ -131,7 +143,7 @@ public class FileUploaderTest {
 	public void testDeleteUploadFile() throws IOException {
 		StringBuffer sbf = new StringBuffer();
 		for (int i = 0; i < 10000; i++) {
-			sbf.append("FileUploaderTest");
+			sbf.append("a");
 		}
 		byte[] bytes = sbf.toString().getBytes();
 
@@ -144,10 +156,10 @@ public class FileUploaderTest {
 		when(mockRequest.getParameter("type")).thenReturn("text/plain");
 		when(mockRequest.getParameter("name")).thenReturn("test.txt");
 		when(mockRequest.getParameter("size")).thenReturn(bytes.length + "");
-		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream());
+		when(mockRequest.getInputStream()).thenReturn(new MockServletInputStream(bytes));
 		when(mockRequest.getContentLength()).thenReturn(1000);
 		FileStorage storage = new FileStorage();
-		ChunkResponse rst = storage.upload(mockRequest.getInputStream(),bytes.length, mockRequest, mockResponse);
+		ChunkResponse rst = storage.upload(mockRequest.getInputStream(), bytes.length, mockRequest, mockResponse);
 		assertTrue(storage.delete(rst.getKey()));
 		Files.deleteIfExists(Paths.get("uploader/test").toAbsolutePath());
 		Files.deleteIfExists(Paths.get("uploader").toAbsolutePath());
